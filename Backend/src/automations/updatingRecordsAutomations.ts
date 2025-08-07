@@ -61,6 +61,12 @@ export const createNewRecordAndEmptyOldRecord = async () => {
 
   const lateRecords = checkForLateAndUnfinishedRecords(tasks as TaskRecord[]);
 
+  if (lateRecords.length > 0) {
+    console.log(`${lateRecords.length} Old records found - Updating now!`);
+  } else {
+    console.log("No update needed!");
+  }
+
   for (const record of lateRecords) {
     const newRecord = await CreateRecord(
       {

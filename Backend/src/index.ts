@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import path from "path";
 import dotenv from "dotenv";
-import connectDB from "./config/db";
 import tableRoutes from "./routes/tableRoutes";
 import app from "./app";
 dotenv.config();
@@ -11,8 +9,6 @@ import { checkCompletedTasksAndNotify } from "./automations/mailAutomation";
 import { createNewRecordAndEmptyOldRecord } from "./automations/updatingRecordsAutomations";
 
 async function main() {
-  await connectDB();
-
   app.use("/api/table", tableRoutes);
 
   // -- for deployment
@@ -26,9 +22,9 @@ async function main() {
   });
 
   // cron.schedule("* * * * *", async () => {
-  //   console.log("🔁 Checking completed tasks...");
+  // console.log("🔁 Checking completed tasks...");
   //   await checkCompletedTasksAndNotify();
-  //   console.log("🔁 Updating tasks...");
+  //   console.log("🔁 Checking for records to update...");
   //   await createNewRecordAndEmptyOldRecord();
   // });
 }
