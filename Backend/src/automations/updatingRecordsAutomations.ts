@@ -4,27 +4,27 @@ import { getAllTasks } from "../services/recordsService";
 import axios from "axios";
 
 const checkForLateAndUnfinishedRecords = (
-  tasks: TaskRecord[]
+  records: TaskRecord[]
 ): TaskRecord[] => {
   const lateRecords: TaskRecord[] = [];
-  for (const task of tasks) {
-    const taskDueDate: string | undefined = task.fields["Due Date"];
+  for (const record of records) {
+    const recordDueDate: string | undefined = record.fields["Due Date"];
     const today = new Date().toISOString().split("T")[0];
     if (
-      taskDueDate &&
-      taskDueDate <= today &&
-      task.fields.Status === "Not Started"
+      recordDueDate &&
+      recordDueDate <= today &&
+      record.fields.Status === "Not Started"
     ) {
-      lateRecords.push(task);
+      lateRecords.push(record);
     }
   }
   return lateRecords;
 };
 
 const EmptyRecord = async (record: TaskRecord) => {
-  const data = {
+  const payload = {
     fields: {
-      "Task Name": record.fields["Task Name"] + " - expired!",
+      "Task Name": record.fields["Task Name"] + " - Expired!",
       Assignee: [],
       "Due Date": null,
       Status: null,
@@ -34,9 +34,9 @@ const EmptyRecord = async (record: TaskRecord) => {
   };
 
   try {
-    const response = await axios.patch(
+    const { data } = await axios.patch(
       `https://api.airtable.com/v0/${process.env.BASE_ID}/${process.env.TABLE_ID}/${record.id}`,
-      data,
+      payload,
       {
         headers: {
           Authorization: `Bearer ${process.env.API_KEY}`,
@@ -45,8 +45,10 @@ const EmptyRecord = async (record: TaskRecord) => {
       }
     );
 
-    console.log("Record updated:", response.data);
-    return response.data;
+    !data && console.log(`Record with id: ${record.id} was not found!`);
+
+    console.log("Record updated:", data);
+    return data;
   } catch (error: any) {
     console.error(
       "Error updating record:",
@@ -57,21 +59,19 @@ const EmptyRecord = async (record: TaskRecord) => {
 };
 
 export const createNewRecordAndEmptyOldRecord = async () => {
-  const tasks = await getAllTasks();
+  const records = await getAllTasks();
 
-  const lateRecords = checkForLateAndUnfinishedRecords(tasks as TaskRecord[]);
+  const lateRecords = checkForLateAndUnfinishedRecords(records as TaskRecord[]);
 
-  if (lateRecords.length > 0) {
-    console.log(`${lateRecords.length} Old records found - Updating now!`);
-  } else {
-    console.log("No update needed!");
-  }
+  lateRecords.length > 0
+    ? console.log(`${lateRecords.length} Old records found - Updating now!`)
+    : console.log("No update needed!");
 
   for (const record of lateRecords) {
     const newRecord = await CreateRecord(
       {
         body: {
-          taskName: record.fields["Task Name"],
+          taskName: `${record.fields["Task Name"]} - Follow up`,
           assignee: Array.isArray(record.fields.Assignee)
             ? record.fields.Assignee[0]
             : record.fields.Assignee ?? "",
@@ -88,6 +88,6 @@ export const createNewRecordAndEmptyOldRecord = async () => {
       } as any
     );
 
-    const editedRecord = await EmptyRecord(record);
+    await EmptyRecord(record);
   }
 };

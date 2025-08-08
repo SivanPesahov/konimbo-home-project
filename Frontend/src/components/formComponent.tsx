@@ -28,7 +28,18 @@ const formSchema = z.object({
   assignee: z.enum(["Sivan", "Shaked", "Elad", "Maya"], {
     required_error: "Assignee is required",
   }),
-  dueDate: z.string().min(1, "Due Date is required"),
+  dueDate: z
+    .string()
+    .min(1, "Due Date is required")
+    .refine(
+      (val) => {
+        const selectedDate = new Date(val);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return selectedDate >= today;
+      },
+      { message: "Due Date cannot be in the past" }
+    ),
   status: z.enum(["Not Started", "In Progress", "Completed"], {
     required_error: "Status is required",
   }),
@@ -70,7 +81,7 @@ function CreateTaskPage() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-md rounded-lg">
+    <Card className="w-full max-w-md mx-auto shadow-md rounded-lg ">
       <div className="bg-white p-6 rounded-lg">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-800">

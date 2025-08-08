@@ -14,16 +14,16 @@ const sendCompletionEmail = async (fields: TaskRecord["fields"]) => {
     },
   });
 
-  const taskName = fields["Task Name"];
+  const recordName = fields["Task Name"];
   const assignee = Array.isArray(fields["Assignee"])
     ? fields["Assignee"].join(", ")
     : fields["Assignee"];
 
   const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,
-    subject: `Task "${taskName}" Completed`,
-    text: `The task "${taskName}" assigned to ${assignee} has been marked as completed.`,
+    to: process.env.RECIVER_MAIL,
+    subject: `Task "${recordName}" Completed`,
+    text: `The task "${recordName}" assigned to ${assignee} has been marked as completed.`,
   });
 
   console.log("Email sent:", info.messageId);

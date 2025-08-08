@@ -15,6 +15,22 @@ async function CreateRecord(
   try {
     const { taskName, assignee, dueDate, status, priority, notes } = req.body;
 
+    if (!taskName) {
+      res.status(400).json({ error: "Task name must be included" });
+      return;
+    }
+
+    if (dueDate) {
+      const due = new Date(dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+      if (due < today) {
+        res.status(400).json({ error: "Due date must be today or later" });
+        return;
+      }
+    }
+
     const validStatuses = ["Not Started", "In Progress", "Completed"];
     const validPriorities = ["Low", "Medium", "High"];
     const validAssignees = ["Sivan", "Shaked", "Maya", "Elad"];

@@ -22,7 +22,7 @@ async function main() {
   });
 
   // cron.schedule("* * * * *", async () => {
-  // console.log("🔁 Checking completed tasks...");
+  //   console.log("🔁 Checking completed tasks...");
   //   await checkCompletedTasksAndNotify();
   //   console.log("🔁 Checking for records to update...");
   //   await createNewRecordAndEmptyOldRecord();
