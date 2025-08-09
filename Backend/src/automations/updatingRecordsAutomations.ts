@@ -78,7 +78,9 @@ export const createNewRecordAndEmptyOldRecord = async () => {
           dueDate: null,
           status: "In Progress",
           priority: record.fields.Priority,
-          notes: record.fields.Notes,
+          notes: record.fields.Notes
+            ? `(Automatically created reminder for task that passed due date) ${record.fields.Notes}`
+            : "Automatically created reminder for task that passed due date",
         },
       } as any,
       {
