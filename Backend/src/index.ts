@@ -21,12 +21,12 @@ async function main() {
     console.log(`Server running on port ${PORT}`);
   });
 
-  // cron.schedule("* * * * *", async () => {
-  //   console.log("🔁 Checking completed tasks...");
-  //   await checkCompletedTasksAndNotify();
-  //   console.log("🔁 Checking for records to update...");
-  //   await createNewRecordAndEmptyOldRecord();
-  // });
+  cron.schedule("* * * * *", async () => {
+    // console.log("🔁 Checking completed tasks...");
+    // await checkCompletedTasksAndNotify();
+    // console.log("🔁 Checking for records to update...");
+    // await createNewRecordAndEmptyOldRecord();
+  });
 }
 
 main().catch((err) => console.error(err));
